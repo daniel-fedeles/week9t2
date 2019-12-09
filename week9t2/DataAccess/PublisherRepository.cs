@@ -1,5 +1,6 @@
 ﻿using DBCon;
 using Models;
+using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
 
@@ -8,7 +9,7 @@ namespace DataAccess
 {
     public class PublisherRepository : IPublisherRepository
     {
-        private SqlConnection con = ConnectionManager.GetConnection.SqlConnetionFactory;
+        private SqlConnection con;
         private List<Publisher> allPublishers;
         private List<NumberOfBooksPerPublisher> numberOfBooksPerPublishers;
         private SqlDataReader reader;
@@ -17,7 +18,7 @@ namespace DataAccess
 
         public PublisherRepository()
         {
-
+            con = ConnectionManager.GetConnection();
             allPublishers = new List<Publisher>();
             numberOfBooksPerPublishers = new List<NumberOfBooksPerPublisher>();
             totalPrice = new List<PriceForAllBooksForEachPublisher>();
@@ -25,8 +26,7 @@ namespace DataAccess
 
         public List<Publisher> GetTop10Publishers()
         {
-
-            using (con)
+            try
             {
                 con.Open();
 
@@ -43,16 +43,27 @@ namespace DataAccess
                     pub.Name = reader["Name"] as string;
                     allPublishers.Add(pub);
                 }
+
+                return allPublishers;
             }
-            return allPublishers;
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
+            finally
+            {
+                con.Close();
+            }
+
+
         }
 
         public int NrOfRowsFromPublisher()
         {
-            using (con)
+            try
             {
                 con.Open();
-
                 var q = "select Count(PublisherId), Name from Publisher";
 
 
@@ -65,15 +76,27 @@ namespace DataAccess
 
                 return (int)z;
             }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
+            finally
+            {
+                con.Close();
+            }
+
         }
 
         public List<NumberOfBooksPerPublisher> AllBooksForEachPublisher()
         {
-            using (con)
+            try
             {
                 con.Open();
 
-                var q = "SELECT Name, COUNT(BookId) AS NrOfBooks FROM Publisher join Book on Book.PublisherId=Publisher.PublisherId group by (Name)"; ;
+                var q =
+                    "SELECT Name, COUNT(BookId) AS NrOfBooks FROM Publisher join Book on Book.PublisherId=Publisher.PublisherId group by (Name)";
+                ;
 
 
                 using (cmd)
@@ -90,19 +113,31 @@ namespace DataAccess
 
                         numberOfBooksPerPublishers.Add(pub);
                     }
-                }
 
+                    return numberOfBooksPerPublishers;
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
+            finally
+            {
                 con.Close();
             }
 
-            return numberOfBooksPerPublishers;
         }
+
+
+
 
         public List<PriceForAllBooksForEachPublisher> TotalPriceForAllBooksForEachPublisher()
         {
-            using (con)
+            try
             {
-                var q = "SELECT Name, SUM(Price) AS TotalPrice FROM Publisher join Book on Book.PublisherId=Publisher.PublisherId group by (Name)";
+                var q =
+                    "SELECT Name, SUM(Price) AS TotalPrice FROM Publisher join Book on Book.PublisherId=Publisher.PublisherId group by (Name)";
 
                 using (cmd)
                 {
@@ -120,9 +155,17 @@ namespace DataAccess
                     }
                 }
 
+                return totalPrice;
             }
-
-            return totalPrice;
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
+            finally
+            {
+                con.Close();
+            }
         }
     }
 }

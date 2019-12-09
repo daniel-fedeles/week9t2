@@ -1,44 +1,27 @@
-﻿using System;
-using System.Configuration;
+﻿using System.Configuration;
 using System.Data.SqlClient;
 
 namespace DBCon
 {
     public class ConnectionManager
     {
-        private static readonly string connectionString = ConfigurationManager.ConnectionStrings["week9t1"].ConnectionString;
-        private static readonly string dsdssds = ConfigurationManager.AppSettings["ConnectionString"];
-
-        private static ConnectionManager con;
-        private static SqlConnection _sqlConnection;
-
-        public SqlConnection SqlConnetionFactory
-        {
-            get
-            {
-                return _sqlConnection;
-            }
-        }
+        private static SqlConnection connection = null;
 
         private ConnectionManager() { }
 
-        public static ConnectionManager GetConnection
+        public static SqlConnection GetConnection()
         {
-            get
+            if (connection == null)
             {
-                if (con == null)
-                    con = new ConnectionManager();
-                try
-                {
-                    _sqlConnection = new SqlConnection(connectionString);
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine(e);
-                    throw;
-                }
-                return con;
+                string connectionString = ConfigurationManager.ConnectionStrings["week9t1"].ConnectionString;
+
+                //   string connectionString2 = ConfigurationManager.ConnectionStrings["SQLConnection"].ConnectionString;
+
+                connection = new SqlConnection(connectionString);
+                connection.Open();
             }
+
+            return connection;
         }
     }
 }

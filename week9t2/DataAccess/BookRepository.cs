@@ -10,7 +10,7 @@ namespace DataAccess
     {
         public BookRepository()
         {
-            con = ConnectionManager.GetConnection.SqlConnetionFactory;
+            con = ConnectionManager.GetConnection();
             reader = null;
             cmd = null;
             AllBooks = new List<Book>();
