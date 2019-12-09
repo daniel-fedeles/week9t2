@@ -28,7 +28,7 @@ namespace DataAccess
         {
             try
             {
-                con.Open();
+
 
                 var q = "select top(10) PublisherId, Name from Publisher";
 
@@ -63,8 +63,8 @@ namespace DataAccess
         {
             try
             {
-                con.Open();
-                var q = "select Count(PublisherId), Name from Publisher";
+                //                con.Open();
+                var q = "select Count(PublisherId) from Publisher";
 
 
                 object z = null;
@@ -92,7 +92,7 @@ namespace DataAccess
         {
             try
             {
-                con.Open();
+                //                con.Open();
 
                 var q =
                     "SELECT Name, COUNT(BookId) AS NrOfBooks FROM Publisher join Book on Book.PublisherId=Publisher.PublisherId group by (Name)";

@@ -18,7 +18,7 @@ namespace DBCon
                 //   string connectionString2 = ConfigurationManager.ConnectionStrings["SQLConnection"].ConnectionString;
 
                 connection = new SqlConnection(connectionString);
-                connection.Open();
+                //                connection.Open();
             }
 
             return connection;
