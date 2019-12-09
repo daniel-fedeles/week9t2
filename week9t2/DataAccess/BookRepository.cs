@@ -43,12 +43,17 @@ namespace DataAccess
                     book.Price = reader["Price"] as decimal? ?? default(decimal);
                     AllBooks.Add(book);
                 }
+
                 return AllBooks;
             }
             catch (Exception e)
             {
                 Console.WriteLine(e);
                 throw;
+            }
+            finally
+            {
+                con.Close();
             }
         }
     }
