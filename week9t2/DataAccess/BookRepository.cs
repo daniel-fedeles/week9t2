@@ -25,11 +25,8 @@ namespace DataAccess
         public List<Book> GetAllBooks()
         {
 
-
-
-            using (con)
+            try
             {
-
                 var q = "select BookId, Title, PublisherId, Year, Price from Book";
 
                 cmd = new SqlCommand(q, con);
@@ -46,31 +43,12 @@ namespace DataAccess
                     book.Price = reader["Price"] as decimal? ?? default(decimal);
                     AllBooks.Add(book);
                 }
-
+                return AllBooks;
             }
-
-
-            return AllBooks;
-        }
-
-        public void cacat()
-        {
-            using (con)
+            catch (Exception e)
             {
-                var q = "select * from Publisher";
-
-                cmd = new SqlCommand(q, con);
-
-                reader = cmd.ExecuteReader();
-                Console.WriteLine();
-                Console.WriteLine();
-                Console.WriteLine();
-                Console.WriteLine();
-                while (reader.Read())
-                {
-                    Console.WriteLine($"{reader["PublisherId"]} {reader["Name"]}");
-                }
-
+                Console.WriteLine(e);
+                throw;
             }
         }
     }
