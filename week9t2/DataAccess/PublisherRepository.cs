@@ -9,7 +9,7 @@ namespace DataAccess
 {
     public class PublisherRepository : IPublisherRepository
     {
-        private SqlConnection con;
+        SqlConnection con = ConnectionManager.GetConnection();
         private List<Publisher> allPublishers;
         private List<NumberOfBooksPerPublisher> numberOfBooksPerPublishers;
         private SqlDataReader reader;
@@ -18,7 +18,7 @@ namespace DataAccess
 
         public PublisherRepository()
         {
-            con = ConnectionManager.GetConnection();
+
             allPublishers = new List<Publisher>();
             numberOfBooksPerPublishers = new List<NumberOfBooksPerPublisher>();
             totalPrice = new List<PriceForAllBooksForEachPublisher>();
@@ -26,22 +26,23 @@ namespace DataAccess
 
         public List<Publisher> GetTop10Publishers()
         {
+
             try
             {
-
-
                 var q = "select top(10) PublisherId, Name from Publisher";
-
-                cmd = new SqlCommand(q, con);
-
-                reader = cmd.ExecuteReader();
-
-                while (reader.Read())
+                using (cmd = new SqlCommand(q, con))
                 {
-                    Publisher pub = new Publisher();
-                    pub.PublisherId = (int)reader["PublisherId"];
-                    pub.Name = reader["Name"] as string;
-                    allPublishers.Add(pub);
+                    using (reader = cmd.ExecuteReader())
+                    {
+
+                        while (reader.Read())
+                        {
+                            Publisher pub = new Publisher();
+                            pub.PublisherId = (int)reader["PublisherId"];
+                            pub.Name = reader["Name"] as string;
+                            allPublishers.Add(pub);
+                        }
+                    }
                 }
 
                 return allPublishers;
@@ -53,7 +54,7 @@ namespace DataAccess
             }
             finally
             {
-                con.Close();
+                //                con.Close();
             }
 
 
@@ -61,9 +62,10 @@ namespace DataAccess
 
         public int NrOfRowsFromPublisher()
         {
+            SqlConnection con = ConnectionManager.GetConnection();
             try
             {
-                //                con.Open();
+
                 var q = "select Count(PublisherId) from Publisher";
 
 
@@ -83,16 +85,17 @@ namespace DataAccess
             }
             finally
             {
-                con.Close();
+                //                con.Close();
             }
 
         }
 
         public List<NumberOfBooksPerPublisher> AllBooksForEachPublisher()
         {
+            SqlConnection con = ConnectionManager.GetConnection();
             try
             {
-                //                con.Open();
+
 
                 var q =
                     "SELECT Name, COUNT(BookId) AS NrOfBooks FROM Publisher join Book on Book.PublisherId=Publisher.PublisherId group by (Name)";
@@ -102,19 +105,19 @@ namespace DataAccess
                 using (cmd)
                 {
                     cmd = new SqlCommand(q, con);
-
-                    reader = cmd.ExecuteReader();
-
-                    while (reader.Read())
+                    using (reader = cmd.ExecuteReader())
                     {
-                        NumberOfBooksPerPublisher pub = new NumberOfBooksPerPublisher();
-                        pub.NoOfBooks = (int)reader["NrOfBooks"];
-                        pub.PublisherName = reader["Name"] as string;
+                        while (reader.Read())
+                        {
+                            NumberOfBooksPerPublisher pub = new NumberOfBooksPerPublisher();
+                            pub.NoOfBooks = (int)reader["NrOfBooks"];
+                            pub.PublisherName = reader["Name"] as string;
 
-                        numberOfBooksPerPublishers.Add(pub);
+                            numberOfBooksPerPublishers.Add(pub);
+                        }
                     }
-
                     return numberOfBooksPerPublishers;
+
                 }
             }
             catch (Exception e)
@@ -124,7 +127,7 @@ namespace DataAccess
             }
             finally
             {
-                con.Close();
+                //                con.Close();
             }
 
         }
@@ -134,24 +137,28 @@ namespace DataAccess
 
         public List<PriceForAllBooksForEachPublisher> TotalPriceForAllBooksForEachPublisher()
         {
+            SqlConnection con = ConnectionManager.GetConnection();
             try
             {
+
                 var q =
                     "SELECT Name, SUM(Price) AS TotalPrice FROM Publisher join Book on Book.PublisherId=Publisher.PublisherId group by (Name)";
 
                 using (cmd)
                 {
-                    cmd = new SqlCommand(q, con);
-
-                    reader = cmd.ExecuteReader();
-
-                    while (reader.Read())
+                    using (cmd = new SqlCommand(q, con))
                     {
-                        PriceForAllBooksForEachPublisher pub = new PriceForAllBooksForEachPublisher();
-                        pub.TotalPrice = (int)reader["TotalPrice"];
-                        pub.PublisherName = reader["Name"] as string;
+                        using (reader = cmd.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                PriceForAllBooksForEachPublisher pub = new PriceForAllBooksForEachPublisher();
+                                pub.TotalPrice = (decimal)reader["TotalPrice"];
+                                pub.PublisherName = reader["Name"] as string;
 
-                        totalPrice.Add(pub);
+                                totalPrice.Add(pub);
+                            }
+                        }
                     }
                 }
 
@@ -164,7 +171,7 @@ namespace DataAccess
             }
             finally
             {
-                con.Close();
+                //                con.Close();
             }
         }
     }
