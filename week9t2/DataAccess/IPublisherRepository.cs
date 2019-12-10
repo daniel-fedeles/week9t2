@@ -6,6 +6,7 @@ namespace DataAccess
 {
     public interface IPublisherRepository
     {
+        List<Publisher> AllPublishers();
         List<Publisher> GetTop10Publishers();
         int NrOfRowsFromPublisher();
         List<NumberOfBooksPerPublisher> AllBooksForEachPublisher();

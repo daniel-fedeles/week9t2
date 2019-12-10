@@ -24,6 +24,35 @@ namespace DataAccess
             totalPrice = new List<PriceForAllBooksForEachPublisher>();
         }
 
+        public List<Publisher> AllPublishers()
+        {
+            try
+            {
+                var q = "select top(10) PublisherId, Name from Publisher";
+                using (cmd = new SqlCommand(q, con))
+                {
+                    using (reader = cmd.ExecuteReader())
+                    {
+
+                        while (reader.Read())
+                        {
+                            Publisher pub = new Publisher();
+                            pub.PublisherId = (int)reader["PublisherId"];
+                            pub.Name = reader["Name"] as string;
+                            allPublishers.Add(pub);
+                        }
+                    }
+                }
+
+                return allPublishers;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
+        }
+
         public List<Publisher> GetTop10Publishers()
         {
 
